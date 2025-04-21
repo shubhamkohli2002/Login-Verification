@@ -2,7 +2,7 @@ name: Run Selenium Tests & Email Allure Report (Windows)
 
 on:
   schedule:
-    - cron: '0 13 * * 1-5' # 6:30 PM IST (1:00 PM UTC), Mon–Fri
+    - cron: '0 14 * * 1-5' # 7:30 PM IST (2:00 PM UTC), Mon–Fri
   workflow_dispatch:       # Manual trigger option
 
 jobs:
@@ -30,25 +30,30 @@ jobs:
       - name: Build with Maven and run tests
         run: |
           mvn clean test
-          mvn io.qameta.allure:allure-maven:2.11.2:report
 
       - name: Verify allure-results directory
         run: |
-          if (Test-Path "target\allure-results") {
+          if (Test-Path "allure-results") {
             Write-Host "Allure results found"
           } else {
             Write-Host "No allure results found"
             exit 1
           }
 
+      - name: Copy allure-results to target
+        run: Copy-Item -Recurse -Force "allure-results" "target/allure-results"
+
+      - name: Generate Allure Report
+        run: mvn io.qameta.allure:allure-maven:2.11.2:report
+
       - name: Archive Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target\site\allure-maven-plugin\
+          path: target/site/allure-maven-plugin/
 
       - name: Zip Allure Report
-        run: powershell Compress-Archive -Path target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
+        run: powershell Compress-Archive -Path target/site/allure-maven-plugin/* -DestinationPath allure-report.zip
 
       - name: Send Email with Report
         uses: dawidd6/action-send-mail@v3
