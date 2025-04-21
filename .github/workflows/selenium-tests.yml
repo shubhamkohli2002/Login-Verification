@@ -1,0 +1,58 @@
+name: Run Selenium Tests & Email Allure Report (Windows)
+
+on:
+  schedule:
+    - cron: '0 17 * * 1-5' # 5 PM UTC, Mon–Fri
+  workflow_dispatch:       # Manual trigger option
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Maven
+        uses: s4u/setup-maven-action@v1.9.0
+        with:
+          maven-version: '3.9.5'
+
+      - name: Build with Maven and run tests
+        run: |
+          mvn clean test
+          mvn allure:report
+
+      - name: Archive Allure Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin/
+
+      - name: Zip Allure Report
+        run: powershell Compress-Archive -Path target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
+
+      - name: Send Email with Report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: Selenium Automation Report
+          to: 006qatest@gmail.com
+          from: GitHub CI Bot <005qatest@gmail.com>
+          body: |
+            Hello,
+
+            Attached is the Selenium Automation Allure Report.
+
+            Regards,
+            GitHub Actions Bot
+          attachments: allure-report.zip
