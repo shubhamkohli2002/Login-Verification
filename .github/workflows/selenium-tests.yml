@@ -29,7 +29,6 @@ jobs:
 
       - name: Build with Maven and run tests
         run: |
-          cd Login-Verification
           mvn clean test
           mvn allure:report
 
@@ -37,10 +36,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: Login-Verification\target\site\allure-maven-plugin\
+          path: target\site\allure-maven-plugin\
 
       - name: Zip Allure Report
-        run: powershell Compress-Archive -Path Login-Verification\target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
+        run: powershell Compress-Archive -Path target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
 
       - name: Send Email with Report
         uses: dawidd6/action-send-mail@v3
