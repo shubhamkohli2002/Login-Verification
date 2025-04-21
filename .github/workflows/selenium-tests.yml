@@ -34,7 +34,7 @@ jobs:
 
       - name: Verify allure-results directory
         run: |
-          if (Test-Path "allure-results") {
+          if (Test-Path "Login-Verification/allure-results") {
             Write-Host "Allure results found"
           } else {
             Write-Host "No allure results found"
