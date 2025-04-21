@@ -32,6 +32,15 @@ jobs:
           mvn clean test
           mvn io.qameta.allure:allure-maven:2.11.2:report
 
+      - name: Verify allure-results directory
+        run: |
+          if (Test-Path "target\allure-results") {
+            Write-Host "Allure results found"
+          } else {
+            Write-Host "No allure results found"
+            exit 1
+          }
+
       - name: Archive Allure Report
         uses: actions/upload-artifact@v4
         with:
