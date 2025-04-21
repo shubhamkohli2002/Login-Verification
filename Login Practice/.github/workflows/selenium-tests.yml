@@ -2,7 +2,7 @@ name: Run Selenium Tests & Email Allure Report (Windows)
 
 on:
   schedule:
-    - cron: '0 17 * * 1-5' # 5 PM UTC, Mon–Fri
+    - cron: '30 11 * * 1-5' # 5 PM IST (11:30 AM UTC), Mon–Fri
   workflow_dispatch:       # Manual trigger option
 
 jobs:
@@ -24,8 +24,12 @@ jobs:
         with:
           maven-version: '3.9.5'
 
+      - name: Debug - List files
+        run: Get-ChildItem -Recurse
+
       - name: Build with Maven and run tests
         run: |
+          cd Login-Verification
           mvn clean test
           mvn allure:report
 
@@ -33,10 +37,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target/site/allure-maven-plugin/
+          path: Login-Verification\target\site\allure-maven-plugin\
 
       - name: Zip Allure Report
-        run: powershell Compress-Archive -Path target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
+        run: powershell Compress-Archive -Path Login-Verification\target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
 
       - name: Send Email with Report
         uses: dawidd6/action-send-mail@v3
