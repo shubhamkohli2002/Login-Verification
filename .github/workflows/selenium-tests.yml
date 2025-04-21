@@ -2,7 +2,7 @@ name: Run Selenium Tests & Email Allure Report (Windows)
 
 on:
   schedule:
-    - cron: '0 12 * * 1-5' # 5:30 PM IST (12:00 PM UTC), Mon–Fri
+    - cron: '15 12 * * 1-5' # 5:45 PM IST (12:15 PM UTC), Mon–Fri
   workflow_dispatch:       # Manual trigger option
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
       - name: Build with Maven and run tests
         run: |
           mvn clean test
-          mvn allure:report
+          mvn io.qameta.allure:allure-maven:2.11.2:report
 
       - name: Archive Allure Report
         uses: actions/upload-artifact@v4
