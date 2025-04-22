@@ -42,8 +42,8 @@ jobs:
           }
 
       - name: Generate Allure Report
-        run: mvn io.qameta.allure:allure-maven:2.11.2:report -Dallure.results.directory=target/allure-results -Dallure.report.directory=target/allure-report
-
+        run: mvn allure:report -Dallure.results.directory=target/allure-results -Dallure.report.directory=target/allure-report
+      
       - name: Debug - Show Allure Report files
         run: |
           if (Test-Path "target/allure-report") {
