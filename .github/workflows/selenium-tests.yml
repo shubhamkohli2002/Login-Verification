@@ -3,7 +3,7 @@ name: Run Selenium Tests & Email Allure Report (Windows)
 on:
   schedule:
     - cron: '0 14 * * 1-5' # 7:30 PM IST (2:00 PM UTC), Mon–Fri
-  workflow_dispatch:       # Manual trigger option
+  workflow_dispatch:
 
 jobs:
   test:
@@ -28,16 +28,29 @@ jobs:
         run: Get-ChildItem -Recurse
 
       - name: Build with Maven and run tests
-        run: |
-          mvn clean test
-          mvn io.qameta.allure:allure-maven:2.11.2:report
+        run: mvn clean test
 
-      - name: Verify allure-results directory
+      - name: Verify and Copy allure-results to target
         run: |
-          if (Test-Path "D:\a\Login-Verification\Login-Verification") {
-            Write-Host "Allure results found"
+          if (Test-Path "allure-results") {
+            Write-Host "✅ Allure results found in root. Copying to target..."
+            New-Item -ItemType Directory -Force -Path "target\allure-results"
+            Copy-Item -Path "allure-results\*" -Destination "target/allure-results" -Recurse -Force
           } else {
-            Write-Host "No allure results found"
+            Write-Host "❌ Allure results NOT found."
+            exit 1
+          }
+
+      - name: Generate Allure Report
+        run: mvn io.qameta.allure:allure-maven:2.11.2:report -Dallure.results.directory=target/allure-results -Dallure.report.directory=allure-report
+
+      - name: Debug - Show Allure Report files
+        run: |
+          if (Test-Path "allure-report") {
+            Write-Host "✅ Allure report generated:"
+            Get-ChildItem -Recurse allure-report
+          } else {
+            Write-Host "❌ Allure report NOT generated."
             exit 1
           }
 
@@ -45,29 +58,56 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: target\site\allure-maven-plugin\
+          path: allure-report\
 
-      - name: Zip Allure Report
-        run: powershell Compress-Archive -Path target\site\allure-maven-plugin\* -DestinationPath allure-report.zip
+  deploy:
+    needs: test
+    runs-on: windows-latest
+    permissions:
+      contents: write
 
-      - name: Rename zipped report to .txt (avoid Gmail block)
-        run: Rename-Item -Path allure-report.zip -NewName allure-report.txt
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Send Email with Report
+      - name: Download Allure Report
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+          path: site
+
+      - name: Create index.html redirect for GitHub Pages
+        run: |
+          echo '<meta http-equiv="refresh" content="0; url=index.html" />' > site/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+
+  notify:
+    needs: deploy
+    runs-on: windows-latest
+
+    steps:
+      - name: Send Email with Report Link Only
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}  # Use App Password
+          password: ${{ secrets.EMAIL_PASSWORD }}
           subject: Selenium Automation Report
           to: 006qatest@gmail.com
           from: GitHub CI Bot <005qatest@gmail.com>
           body: |
             Hello,
 
-            The Selenium Automation Report is attached. If you are unable to view the file, please check the GitHub Actions artifact or contact QA.
+            Your automated Selenium test report has been generated.
 
-            Regards,
+            📄 View the full HTML report here:
+            🔗 https://shubhamkohli2002.github.io/login-verification/
+
+            Regards,  
             GitHub Actions Bot
-          attachments: allure-report.txt
