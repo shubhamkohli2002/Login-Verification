@@ -42,14 +42,13 @@ jobs:
           }
 
       - name: Generate Allure Report
-        run: mvn io.qameta.allure:allure-maven:2.11.2:report -Dallure.results.directory=target/allure-results -Dallure.report.directory=allure-report
-      
+        run: mvn io.qameta.allure:allure-maven:2.11.2:report -Dallure.results.directory=target/allure-results -Dallure.report.directory=target/allure-report
 
       - name: Debug - Show Allure Report files
         run: |
-          if (Test-Path "allure-report") {
+          if (Test-Path "target/allure-report") {
             Write-Host "✅ Allure report generated:"
-            Get-ChildItem -Recurse allure-report
+            Get-ChildItem -Recurse target/allure-report
           } else {
             Write-Host "❌ Allure report NOT generated."
             exit 1
@@ -59,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: allure-report\
+          path: target/allure-report/
 
   deploy:
     needs: test
