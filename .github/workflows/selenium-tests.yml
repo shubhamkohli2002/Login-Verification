@@ -39,8 +39,8 @@ jobs:
             -Dallure.results.directory=$env:ALLURE_RESULTS_PATH `
             -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
-        shell: pwsh
-      
+        shell: cmd
+
 
 
 
