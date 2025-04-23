@@ -27,30 +27,16 @@ jobs:
       - name: Run Tests and Generate Allure Results
         run: mvn clean test
 
-      - name: Debug - Find Allure Results Directory
-        run: |
-          echo "🔍 Searching for allure-results..."
-          Get-ChildItem -Recurse -Directory | Where-Object { $_.Name -eq "allure-results" }
-
-      - name: Ensure allure-results is in target folder
-        run: |
-          if (Test-Path "allure-results") {
-            echo "✅ Found allure-results in root. Copying to target/"
-            Copy-Item -Recurse -Force allure-results target/allure-results
-          } elseif (!(Test-Path "target/allure-results")) {
-            echo "❌ No allure-results found. Failing pipeline."
-            exit 1
-          }
-
       - name: Debug - List Allure Results
         run: Get-ChildItem -Recurse target/allure-results
 
       - name: Generate Allure Report
         run: |
           mvn io.qameta.allure:allure-maven:2.11.2:report ^
-            -Dallure.results.directory=target/allure-results ^
+            -Dallure.results.directory=allure-results ^
             -Dallure.report.directory=target/allure-report
         shell: cmd
+
 
       - name: Debug - Show Allure Report
         run: |
