@@ -1,9 +1,9 @@
-name: Run Selenium Tests & Email Allure Report (Windows)
+name: Run Selenium Tests & Publish Allure Report
 
 on:
-  schedule:
-    - cron: '0 14 * * 1-5' # 7:30 PM IST (2:00 PM UTC), Mon–Fri
   workflow_dispatch:
+  schedule:
+    - cron: '0 14 * * 1-5' # 2:00 PM UTC / 7:30 PM IST (Mon-Fri)
 
 jobs:
   test:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -24,22 +24,11 @@ jobs:
         with:
           maven-version: '3.9.5'
 
-      - name: Debug - List files
-        run: Get-ChildItem -Recurse
-
-      - name: Build with Maven and run tests
+      - name: Run Tests and Generate Allure Results
         run: mvn clean test
 
-      - name: Verify and Copy allure-results to target
-        run: |
-          if (Test-Path "target/allure-results") {
-            Write-Host "✅ Allure results found in root. Copying to target..."
-            New-Item -ItemType Directory -Force -Path "target\allure-results"
-            Copy-Item -Path "allure-results\*" -Destination "target/allure-results" -Recurse -Force
-          } else {
-            Write-Host "❌ Allure results NOT found."
-            exit 1
-          }
+      - name: Debug - List Allure Results
+        run: Get-ChildItem -Recurse target/allure-results
 
       - name: Generate Allure Report
         run: |
@@ -48,7 +37,7 @@ jobs:
             -Dallure.report.directory=target/allure-report
         shell: cmd
 
-      - name: Debug - Show Allure Report files
+      - name: Debug - Show Allure Report
         run: |
           if (Test-Path "target/allure-report") {
             Write-Host "✅ Allure report generated:"
@@ -95,7 +84,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Send Email with Report Link Only
+      - name: Send Email with Report Link
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -108,9 +97,9 @@ jobs:
           body: |
             Hello,
 
-            Your automated Selenium test report has been successfully generated and deployed.
+            Your Selenium test report has been generated and deployed.
 
-            📄 View the full HTML report here:
+            📄 View the HTML report here:
             🔗 https://shubhamkohli2002.github.io/Login-Verification/
 
             Regards,  
