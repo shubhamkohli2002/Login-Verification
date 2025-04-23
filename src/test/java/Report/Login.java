@@ -1,6 +1,8 @@
 package Report;
 
-import io.qameta.allure.*;
+import io.qameta.allure.Description;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.testng.AllureTestNg;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -8,8 +10,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.*;
 
 import java.util.concurrent.TimeUnit;
-
-import static org.testng.Assert.assertEquals;
 
 @Listeners({AllureTestNg.class})
 public class Login {
