@@ -35,12 +35,13 @@ jobs:
 
       - name: Generate Allure Report
         run: |
-          mvn io.qameta.allure:allure-maven:2.11.2:report ^
-            -Dallure.results.directory=$env:ALLURE_RESULTS_PATH ^
+          mvn io.qameta.allure:allure-maven:2.11.2:report `
+            -Dallure.results.directory=$env:ALLURE_RESULTS_PATH `
             -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
         shell: pwsh
       
+
 
 
 
