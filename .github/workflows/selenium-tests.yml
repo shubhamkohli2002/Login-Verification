@@ -29,17 +29,18 @@ jobs:
 
       - name: Find Allure Results Path
         run: |
-          $ALLURE_RESULTS_PATH = Get-ChildItem -Recurse -Directory -Filter "allure-results" | Select-Object -First 1
-          Write-Host "Allure results path: $ALLURE_RESULTS_PATH"
-          echo "ALLURE_RESULTS_PATH=$($ALLURE_RESULTS_PATH.FullName)" >> $env:GITHUB_ENV
+          for /f "delims=" %%i in ('dir /s /b /ad "allure-results"') do set ALLURE_RESULTS_PATH=%%i
+          echo Allure results path: %ALLURE_RESULTS_PATH%
+          echo ALLURE_RESULTS_PATH=%ALLURE_RESULTS_PATH% >> $env:GITHUB_ENV
 
       - name: Generate Allure Report
         run: |
-          mvn io.qameta.allure:allure-maven:2.11.2:report `
-            -Dallure.results.directory=$env:ALLURE_RESULTS_PATH `
+          mvn allure:report ^
+            -Dallure.results.directory=%ALLURE_RESULTS_PATH% ^
             -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
         shell: cmd
+
 
 
 
