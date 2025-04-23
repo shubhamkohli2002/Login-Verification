@@ -29,19 +29,20 @@ jobs:
 
       - name: Find Allure Results Path
         run: |
-          cmd /c "for /f \"delims=\" %i in ('dir /s /b /ad allure-results 2^>nul') do set ALLURE_RESULTS_PATH=%i"
-          echo Allure results path: %ALLURE_RESULTS_PATH%
-          echo ALLURE_RESULTS_PATH=%ALLURE_RESULTS_PATH% >> $env:GITHUB_ENV
-        shell: cmd
+          $ALLURE_RESULTS_PATH = Get-ChildItem -Recurse -Directory -Filter "allure-results" | Select-Object -First 1
+          Write-Host "Allure results path: $ALLURE_RESULTS_PATH"
+          echo "ALLURE_RESULTS_PATH=$($ALLURE_RESULTS_PATH.FullName)" >> $env:GITHUB_ENV
+        shell: pwsh
 
       - name: Generate Allure Report
         run: |
-          cmd /c "mvn allure:report ^
-            -Dallure.results.directory=%ALLURE_RESULTS_PATH% ^
-            -Dallure.report.directory=target/allure-report"
+          mvn allure:report ^
+            -Dallure.results.directory=$env:ALLURE_RESULTS_PATH ^
+            -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
-        shell: cmd
+        shell: pwsh
       
+
 
 
 
