@@ -1,0 +1,2 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"Valid login functionality with student credentials","3474","TestCase1","Default Suite","Wed Apr 23 19:14:23 IST 2025","passed","Wed Apr 23 19:14:27 IST 2025","Report.Login","Login.java","Report.Login","TestCase1"
