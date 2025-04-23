@@ -29,17 +29,19 @@ jobs:
 
       - name: Find Allure Results Path
         run: |
-          for /f "delims=" %%i in ('dir /s /b /ad "allure-results"') do set ALLURE_RESULTS_PATH=%%i
+          cmd /c "for /f \"delims=\" %%i in ('dir /s /b /ad \"allure-results\"') do set ALLURE_RESULTS_PATH=%%i"
           echo Allure results path: %ALLURE_RESULTS_PATH%
           echo ALLURE_RESULTS_PATH=%ALLURE_RESULTS_PATH% >> $env:GITHUB_ENV
+        shell: cmd
 
       - name: Generate Allure Report
         run: |
-          mvn allure:report ^
+          cmd /c "mvn allure:report ^
             -Dallure.results.directory=%ALLURE_RESULTS_PATH% ^
-            -Dallure.report.directory=target/allure-report
+            -Dallure.report.directory=target/allure-report"
         working-directory: ${{ github.workspace }}
         shell: cmd
+      
 
 
 
