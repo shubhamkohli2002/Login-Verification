@@ -27,16 +27,20 @@ jobs:
       - name: Run Tests and Generate Allure Results
         run: mvn clean test
 
-      - name: Debug - List Allure Results
-        run: Get-ChildItem -Recurse target/allure-results
+      - name: Find Allure Results Path
+        run: |
+          ALLURE_RESULTS_PATH=$(find . -type d -name "allure-results" -print -quit)
+          echo "Allure results path: $ALLURE_RESULTS_PATH"
+          echo "ALLURE_RESULTS_PATH=$ALLURE_RESULTS_PATH" >> $GITHUB_ENV
 
       - name: Generate Allure Report
         run: |
           mvn io.qameta.allure:allure-maven:2.11.2:report ^
-            -Dallure.results.directory=target/allure-results ^
+            -Dallure.results.directory=$ALLURE_RESULTS_PATH ^
             -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
         shell: cmd
+      
 
 
 
