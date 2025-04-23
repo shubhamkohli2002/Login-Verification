@@ -32,7 +32,7 @@ jobs:
 
       - name: Confirm allure-results exists
         run: |
-          if (Test-Path "target/allure-results") {
+          if (Test-Path "allure-results") {
             echo "✅ Allure results found!"
           } else {
             echo "❌ Allure results missing"
