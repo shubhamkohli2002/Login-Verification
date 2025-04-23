@@ -30,22 +30,11 @@ jobs:
       - name: Debug - List Allure Results
         run: Get-ChildItem -Recurse target/allure-results
 
-      - name: Confirm allure-results exists
-        run: |
-          if (Test-Path "allure-results") {
-            echo "✅ Allure results found!"
-          } else {
-            echo "❌ Allure results missing"
-            exit 1
-          }
-        shell: pwsh
-
-
       - name: Generate Allure Report
         run: |
           mvn io.qameta.allure:allure-maven:2.11.2:report ^
             -Dallure.results.directory=target/allure-results ^
-            -Dallure.report.directory=allure-report
+            -Dallure.report.directory=target/allure-report
         working-directory: ${{ github.workspace }}
         shell: cmd
 
