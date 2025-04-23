@@ -27,16 +27,6 @@ jobs:
       - name: Run Tests and Generate Allure Results
         run: mvn clean test
 
-      - name: Copy allure-results to correct location if needed
-        run: |
-          if (Test-Path "allure-results") {
-            Write-Host "✅ Found allure-results in root. Copying to target/..."
-            Copy-Item -Recurse -Force allure-results target/allure-results
-          } elseif (!(Test-Path "target/allure-results")) {
-            Write-Host "❌ No allure-results found in expected locations."
-            exit 1
-          }
-
       - name: Debug - List Allure Results
         run: Get-ChildItem -Recurse target/allure-results
 
